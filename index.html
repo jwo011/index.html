@@ -18,11 +18,16 @@
     border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);
   }
   .hidden { display: none; }
-  .cta { background: #00b0a6; color: white; padding: 10px 16px; border: none; border-radius: 4px; }
-  .warn { background: #ffb000; }
-  .danger { background: #d83b01; color: white; }
+  .cta { background: #00b0a6; color: white; padding: 10px 16px; border: none; border-radius: 4px; cursor: pointer; }
+  .cta:hover { background: #009693; }
+  .warn { background: #ffb000; color: black; padding: 10px 16px; border: none; border-radius: 4px; cursor: pointer; }
+  .warn:hover { background: #e6a000; }
+  .danger { background: #d83b01; color: white; padding: 10px 16px; border: none; border-radius: 4px; cursor: pointer; }
+  .danger:hover { background: #a52a00; }
   label { margin-top: 12px; display: block; font-weight: 600; }
-  textarea, select { width: 100%; margin-top: 6px; padding: 6px; }
+  textarea, select { width: 100%; margin-top: 6px; padding: 6px; box-sizing: border-box; }
+  .audit-entry { padding: 8px; border-left: 3px solid #00b0a6; margin-top: 8px; background: #f9f9f9; }
+  .success { background: #107c10; color: white; padding: 12px; border-radius: 4px; margin-bottom: 16px; }
 </style>
 </head>
 
@@ -111,7 +116,9 @@
 const StateStore = {
   currentRole: null,
   csa: { status: "DRAFT", result: "", comment: "" },
-  audit: []
+  audit: [],
+  delegated: false,
+  csaReviewPending: false
 };
 
 /* ===========================
@@ -119,4 +126,127 @@ const StateStore = {
    =========================== */
 const AuditService = {
   log(event) {
-    StateStore.audit.push(event);
+    const timestamp = new Date().toLocaleTimeString();
+    const logEntry = `[${timestamp}] ${event}`;
+    StateStore.audit.push(logEntry);
+    this.render();
+  },
+  render() {
+    const auditLog = document.getElementById('auditLog');
+    if (auditLog) {
+      auditLog.innerHTML = StateStore.audit.map(entry => 
+        `<div class="audit-entry">${entry}</div>`
+      ).join('');
+    }
+  }
+};
+
+/* ===========================
+   UI CONTROLLER
+   =========================== */
+const UIController = {
+  hideAll() {
+    document.getElementById('roleSelect').classList.add('hidden');
+    document.getElementById('performer').classList.add('hidden');
+    document.getElementById('csa').classList.add('hidden');
+    document.getElementById('reviewer').classList.add('hidden');
+    document.getElementById('grc').classList.add('hidden');
+  },
+  showBackButton(role) {
+    const nav = document.getElementById('nav');
+    nav.innerHTML = `<button class="cta" onclick="UIController.loadRole('role-select')">← Back</button>`;
+  },
+  loadRole(role) {
+    this.hideAll();
+    StateStore.currentRole = role;
+    
+    if (role === 'performer') {
+      document.getElementById('performer').classList.remove('hidden');
+      this.showBackButton('performer');
+      AuditService.log('User switched to Performer role');
+    } else if (role === 'reviewer') {
+      document.getElementById('reviewer').classList.remove('hidden');
+      this.showBackButton('reviewer');
+      AuditService.log('User switched to Reviewer role');
+    } else if (role === 'grc') {
+      document.getElementById('grc').classList.remove('hidden');
+      this.showBackButton('grc');
+      AuditService.log('User switched to GRC Team role');
+    } else if (role === 'role-select') {
+      document.getElementById('roleSelect').classList.remove('hidden');
+      document.getElementById('nav').innerHTML = '';
+      AuditService.log('User returned to role selection');
+    }
+  },
+  showCSA() {
+    document.getElementById('performer').classList.add('hidden');
+    document.getElementById('csa').classList.remove('hidden');
+    AuditService.log('Control Performer started CSA form');
+  }
+};
+
+/* ===========================
+   WORKFLOW SERVICE
+   =========================== */
+const WorkflowService = {
+  approve() {
+    AuditService.log('Reviewer APPROVED: Bank Reconciliation – Denmark – March');
+    alert('✓ CSA Approved successfully!\n\nThe control has been marked as effective.');
+    StateStore.csaReviewPending = false;
+  },
+  reject() {
+    AuditService.log('Reviewer REJECTED: Bank Reconciliation – Denmark – March');
+    alert('✗ CSA Rejected.\n\nPlease request more evidence or correction.');
+    StateStore.csaReviewPending = false;
+  },
+  delegate() {
+    AuditService.log('Control Performer delegated task to another user');
+    alert('📋 Task delegated successfully!');
+    StateStore.delegated = true;
+  }
+};
+
+/* ===========================
+   CSA SERVICE
+   =========================== */
+const CSAService = {
+  submit() {
+    const result = document.getElementById('csaResult').value;
+    const comment = document.getElementById('csaComment').value;
+    
+    if (!comment.trim()) {
+      alert('⚠️ Please add a comment before submitting.');
+      return;
+    }
+    
+    StateStore.csa = {
+      status: "SUBMITTED",
+      result: result,
+      comment: comment,
+      submittedAt: new Date().toLocaleString()
+    };
+    
+    AuditService.log(`CSA Submitted: Result="${result}", Comment="${comment.substring(0, 30)}..."`);
+    StateStore.csaReviewPending = true;
+    
+    alert(`✓ CSA submitted for review!\n\nResult: ${result}\nComment: ${comment.substring(0, 50)}...`);
+    
+    // Reset form
+    document.getElementById('csaComment').value = '';
+    document.getElementById('csaResult').value = 'Effective';
+    
+    // Return to performer view
+    document.getElementById('csa').classList.add('hidden');
+    document.getElementById('performer').classList.remove('hidden');
+  }
+};
+
+// Initialize
+window.onload = function() {
+  AuditService.log('Application loaded');
+  AuditService.log('User ready to select role');
+};
+</script>
+
+</body>
+</html>
