@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>GRC Platform – Clickable Prototype</title>
+  <style>
+    body {
+      font-family: Segoe UI, Arial, sans-serif;
+      margin: 24px;
+      line-height: 1.5;
+    }
+    h1, h2, h3 {
+      margin-top: 1.5em;
+    }
+    .roles span {
+      margin-right: 16px;
+      padding: 6px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    table {
+      border-collapse: collapse;
+      margin-top: 12px;
+      width: 100%;
+      max-width: 700px;
+    }
+    table th, table td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
+    .actions button {
+      margin-right: 8px;
+    }
+    ul {
+      margin-top: 8px;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 16px;
+      margin: 12px 0;
+      max-width: 700px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>GRC Platform – Clickable Prototype</h1>
+
+  <h2>GRC Backbone – Prototype</h2>
+
+  <h3>Select your role</h3>
+  <div class="roles">
+    <span>Control Performer</span>
+    <span>Reviewer</span>
+    <span>GRC Team</span>
+  </div>
+
+  <h3>My CSAs</h3>
+  <div class="card">
+    <strong>Bank Reconciliation – DK – March</strong><br />
+    <div class="actions">
+      <button>Perform CSA</button>
+      <button>Delegate</button>
+    </div>
+  </div>
+
+  <h3>Control Self‑Assessment</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>Status</th>
+        <th>Effective</th>
+        <th>Ineffective</th>
+        <th>Evidence</th>
+        <th>Comments</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td colspan="5">
+          <button>Submit</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Pending Reviews</h3>
+  <div class="card">
+    <strong>Bank Reconciliation – DK – March</strong><br />
+    <div class="actions">
+      <button>Approve</button>
+      <button>Reject</button>
+    </div>
+  </div>
+
+  <h3>GRC Dashboard</h3>
+  <ul>
+    <li>CSA Completion: <strong>92%</strong></li>
+    <li>Open Issues: <strong>14</strong></li>
+    <li>Overdue CSAs: <strong>3</strong></li>
+  </ul>
+
+  <h3>Issues</h3>
+  <div class="card">
+    <strong>Audit Finding – Access Management</strong><br />
+    <div class="actions">
+      <button>Assign</button>
+      <button>Update</button>
+    </div>
+  </div>
+
+</body>
+</html>
