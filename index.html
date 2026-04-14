@@ -1,116 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>GRC Platform – Clickable Prototype</title>
-  <style>
-    body {
-      font-family: Segoe UI, Arial, sans-serif;
-      margin: 24px;
-      line-height: 1.5;
-    }
-    h1, h2, h3 {
-      margin-top: 1.5em;
-    }
-    .roles span {
-      margin-right: 16px;
-      padding: 6px 12px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    table {
-      border-collapse: collapse;
-      margin-top: 12px;
-      width: 100%;
-      max-width: 700px;
-    }
-    table th, table td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
-    .actions button {
-      margin-right: 8px;
-    }
-    ul {
-      margin-top: 8px;
-    }
-    .card {
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 16px;
-      margin: 12px 0;
-      max-width: 700px;
-    }
-  </style>
+<meta charset="UTF-8" />
+<title>GRC Backbone – Clickable Prototype</title>
+
+<style>
+  body { font-family: "Segoe UI", Arial, sans-serif; margin: 0; background: #f3f5f7; }
+  header { background: #00243d; color: white; padding: 16px; }
+  nav button {
+    margin-right: 8px; padding: 8px 14px;
+    border: none; background: #005ead; color: white;
+    cursor: pointer; border-radius: 4px;
+  }
+  .container { padding: 24px; }
+  .card {
+    background: white; padding: 20px; margin-bottom: 16px;
+    border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  }
+  .hidden { display: none; }
+  .cta { background: #00b0a6; color: white; padding: 10px 16px; border: none; border-radius: 4px; }
+  .warn { background: #ffb000; }
+  .danger { background: #d83b01; color: white; }
+  label { margin-top: 12px; display: block; font-weight: 600; }
+  textarea, select { width: 100%; margin-top: 6px; padding: 6px; }
+</style>
 </head>
+
 <body>
 
-  <h1>GRC Platform – Clickable Prototype</h1>
+<header>
+  <h1>GRC Backbone – Clickable UX Prototype</h1>
+  <nav id="nav"></nav>
+</header>
 
-  <h2>GRC Backbone – Prototype</h2>
+<div class="container">
 
-  <h3>Select your role</h3>
-  <div class="roles">
-    <span>Control Performer</span>
-    <span>Reviewer</span>
-    <span>GRC Team</span>
-  </div>
+<!-- ROLE SELECT -->
+<div id="roleSelect" class="card">
+  <h2>Select Role</h2>
+  <button class="cta" onclick="UIController.loadRole('performer')">Control Performer</button>
+  <button class="cta" onclick="UIController.loadRole('reviewer')">Reviewer</button>
+  <button class="cta" onclick="UIController.loadRole('grc')">GRC Team</button>
+</div>
 
-  <h3>My CSAs</h3>
+<!-- PERFORMER -->
+<div id="performer" class="hidden">
   <div class="card">
-    <strong>Bank Reconciliation – DK – March</strong><br />
-    <div class="actions">
-      <button>Perform CSA</button>
-      <button>Delegate</button>
-    </div>
+    <h2>My CSAs</h2>
+    <p><b>Bank Reconciliation – Denmark – March</b></p>
+    <button class="cta" onclick="UIController.showCSA()">Perform CSA</button>
+    <button class="warn" onclick="WorkflowService.delegate()">Delegate</button>
   </div>
+</div>
 
-  <h3>Control Self‑Assessment</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>Status</th>
-        <th>Effective</th>
-        <th>Ineffective</th>
-        <th>Evidence</th>
-        <th>Comments</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td colspan="5">
-          <button>Submit</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h3>Pending Reviews</h3>
+<!-- CSA -->
+<div id="csa" class="hidden">
   <div class="card">
-    <strong>Bank Reconciliation – DK – March</strong><br />
-    <div class="actions">
-      <button>Approve</button>
-      <button>Reject</button>
-    </div>
+    <h2>Control Self‑Assessment</h2>
+
+    <label>Result</label>
+    <select id="csaResult">
+      <option>Effective</option>
+      <option>Ineffective</option>
+    </select>
+
+    <label>Evidence</label>
+    <input type="file" />
+
+    <label>Comment</label>
+    <textarea id="csaComment" rows="4"></textarea>
+
+    <br/><br/>
+    <button class="cta" onclick="CSAService.submit()">Submit for review</button>
   </div>
+</div>
 
-  <h3>GRC Dashboard</h3>
-  <ul>
-    <li>CSA Completion: <strong>92%</strong></li>
-    <li>Open Issues: <strong>14</strong></li>
-    <li>Overdue CSAs: <strong>3</strong></li>
-  </ul>
-
-  <h3>Issues</h3>
+<!-- REVIEWER -->
+<div id="reviewer" class="hidden">
   <div class="card">
-    <strong>Audit Finding – Access Management</strong><br />
-    <div class="actions">
-      <button>Assign</button>
-      <button>Update</button>
-    </div>
+    <h2>Pending Reviews</h2>
+    <p><b>Bank Reconciliation – Denmark – March</b></p>
+    <button class="cta" onclick="WorkflowService.approve()">Approve</button>
+    <button class="danger" onclick="WorkflowService.reject()">Reject</button>
+  </div>
+</div>
+
+<!-- GRC -->
+<div id="grc" class="hidden">
+  <div class="card">
+    <h2>GRC Dashboard</h2>
+    <ul>
+      <li>CSA completion: 92%</li>
+      <li>Open issues: 14</li>
+      <li>Overdue CSAs: 3</li>
+    </ul>
   </div>
 
-</body>
-</html>
+  <div class="card">
+    <h2>Audit Trail</h2>
+    <div id="auditLog"></div>
+  </div>
+</div>
+
+</div>
+
+<script>
+/* ===========================
+   STATE STORE (mock DB)
+   =========================== */
+const StateStore = {
+  currentRole: null,
+  csa: { status: "DRAFT", result: "", comment: "" },
+  audit: []
+};
+
+/* ===========================
+   AUDIT SERVICE
+   =========================== */
+const AuditService = {
+  log(event) {
+    StateStore.audit.push(event);
